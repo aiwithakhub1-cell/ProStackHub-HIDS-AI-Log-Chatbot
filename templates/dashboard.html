@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>HIDS Security Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0b1120;
+            color: #e5e7eb;
+        }
+
+        /* ================= HEADER ================= */
+
+        header {
+            background: #111827;
+            border-bottom: 1px solid #263244;
+            padding: 25px 45px;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+            letter-spacing: 0.5px;
+        }
+
+        header p {
+            margin: 8px 0 0;
+            color: #9ca3af;
+            font-size: 15px;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 7px 12px;
+            border-radius: 20px;
+            background: #10251d;
+            color: #4ade80;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 35px 45px;
+        }
+
+        /* ================= SUMMARY CARDS ================= */
+
+        .cards {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(190px, 1fr));
+
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #111827;
+            border: 1px solid #263244;
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .card-title {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .card-subtitle {
+            margin-top: 8px;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        /* ================= SECTIONS ================= */
+
+        .section {
+            background: #111827;
+            border: 1px solid #263244;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .section-header p {
+            margin: 5px 0 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .alert-count {
+            background: #1f2937;
+            border: 1px solid #374151;
+            padding: 7px 12px;
+            border-radius: 7px;
+            font-size: 13px;
+            color: #d1d5db;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px;
+            color: #9ca3af;
+            background: #0f172a;
+            border-bottom: 1px solid #263244;
+            font-size: 13px;
+        }
+
+        td {
+            padding: 15px 14px;
+            border-bottom: 1px solid #1f2937;
+            font-size: 13px;
+            color: #d1d5db;
+        }
+
+        tr:hover td {
+            background: #151e2d;
+        }
+
+        .time {
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+
+        .ip {
+            font-family: monospace;
+            color: #93c5fd;
+        }
+
+        .log-message {
+            max-width: 350px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #9ca3af;
+        }
+
+        /* ================= SEVERITY ================= */
+
+        .severity {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .severity-critical {
+            background: #3b1111;
+            color: #f87171;
+        }
+
+        .severity-high {
+            background: #3b1f0b;
+            color: #fb923c;
+        }
+
+        .severity-medium {
+            background: #3a3009;
+            color: #facc15;
+        }
+
+        .severity-low {
+            background: #10251d;
+            color: #4ade80;
+        }
+
+        /* ================= EMPTY STATE ================= */
+
+        .empty-state {
+            text-align: center;
+            padding: 45px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state strong {
+            display: block;
+            color: #d1d5db;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        /* ================= CHATBOT ================= */
+
+        .chat-description {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .chat-box {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-box input {
+            flex: 1;
+            padding: 14px 16px;
+            background: #0f172a;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+        }
+
+        .chat-box input:focus {
+            border-color: #60a5fa;
+        }
+
+        .chat-box button {
+            padding: 14px 22px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .chat-box button:hover {
+            background: #1d4ed8;
+        }
+
+        #answer {
+            margin-top: 18px;
+            padding: 18px;
+            min-height: 70px;
+            background: #0f172a;
+            border: 1px solid #263244;
+            border-radius: 8px;
+            color: #d1d5db;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        /* ================= FOOTER ================= */
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 700px) {
+
+            header {
+                padding: 22px;
+            }
+
+            header h1 {
+                font-size: 23px;
+            }
+
+            .container {
+                padding: 25px 18px;
+            }
+
+            .section {
+                padding: 18px;
+            }
+
+            .section-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .chat-box {
+                flex-direction: column;
+            }
+
+            .chat-box button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<header>
+
+    <div class="header-content">
+
+        <h1>Host-Based Intrusion Detection System</h1>
+
+        <p>
+            Security Monitoring & AI-Powered Log Analysis
+        </p>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            Monitoring Active
+        </div>
+
+    </div>
+
+</header>
+
+
+<div class="container">
+
+    <!-- ================= SUMMARY ================= -->
+
+    <div class="cards">
+
+        <div class="card">
+
+            <div class="card-title">
+                TOTAL ALERTS
+            </div>
+
+            <div class="card-value">
+                {{ summary.total }}
+            </div>
+
+            <div class="card-subtitle">
+                Detected security events
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                CRITICAL
+            </div>
+
+            <div class="card-value">
+                {{ summary.critical }}
+            </div>
+
+            <div class="card-subtitle">
+                Critical severity events
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                HIGH
+            </div>
+
+            <div class="card-value">
+                {{ summary.high }}
+            </div>
+
+            <div class="card-subtitle">
+                High-risk events
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                MEDIUM
+            </div>
+
+            <div class="card-value">
+                {{ summary.medium }}
+            </div>
+
+            <div class="card-subtitle">
+                Medium-risk events
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                LOW
+            </div>
+
+            <div class="card-value">
+                {{ summary.low }}
+            </div>
+
+            <div class="card-subtitle">
+                Low-risk events
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= ALERTS ================= -->
+
+    <div class="section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>Detected Security Events</h2>
+
+                <p>
+                    Real-time events detected from system logs
+                </p>
+
+            </div>
+
+            <div class="alert-count">
+                {{ summary.total }} Alerts
+            </div>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Time</th>
+                        <th>Event</th>
+                        <th>Severity</th>
+                        <th>Source IP</th>
+                        <th>Log Message</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for alert in alerts %}
+
+                    <tr>
+
+                        <td class="time">
+                            {{ alert.timestamp }}
+                        </td>
+
+                        <td>
+                            <strong>
+                                {{ alert.event_type }}
+                            </strong>
+                        </td>
+
+                        <td>
+
+                            {% if alert.severity|lower == "critical" %}
+
+                                <span class="severity severity-critical">
+                                    Critical
+                                </span>
+
+                            {% elif alert.severity|lower == "high" %}
+
+                                <span class="severity severity-high">
+                                    High
+                                </span>
+
+                            {% elif alert.severity|lower == "medium" %}
+
+                                <span class="severity severity-medium">
+                                    Medium
+                                </span>
+
+                            {% else %}
+
+                                <span class="severity severity-low">
+                                    Low
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td class="ip">
+                            {{ alert.source_ip }}
+                        </td>
+
+                        <td class="log-message"
+                            title="{{ alert.log_message }}">
+                            {{ alert.log_message }}
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td colspan="5">
+
+                            <div class="empty-state">
+
+                                <strong>
+                                    No Security Events Detected
+                                </strong>
+
+                                The system has not detected any suspicious activity yet.
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= AI CHATBOT ================= -->
+
+    <div class="section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>AI Security Assistant</h2>
+
+                <p>
+                    Ask questions about the security events detected by HIDS.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="chat-box">
+
+            <input
+                type="text"
+                id="question"
+                placeholder="Example: What happened in the last hour?"
+            >
+
+            <button
+                onclick="askQuestion()"
+            >
+                Ask AI
+            </button>
+
+        </div>
+
+
+        <div id="answer">
+            AI analysis will appear here.
+        </div>
+
+    </div>
+
+</div>
+
+
+<footer>
+
+    HIDS Security Monitoring System • AI Log Analysis
+
+</footer>
+
+
+<script>
+
+async function askQuestion() {
+
+    const question =
+        document.getElementById("question").value.trim();
+
+    const answer =
+        document.getElementById("answer");
+
+    if (!question) {
+
+        answer.innerText =
+            "Please enter a question.";
+
+        return;
+    }
+
+    answer.innerText =
+        "Analyzing security events...";
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "question",
+        question
+    );
+
+    try {
+
+        const response =
+            await fetch("/chat", {
+                method: "POST",
+                body: formData
+            });
+
+        const data =
+            await response.json();
+
+        answer.innerText =
+            data.answer;
+
+    } catch (error) {
+
+        answer.innerText =
+            "Unable to contact AI service.";
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>
