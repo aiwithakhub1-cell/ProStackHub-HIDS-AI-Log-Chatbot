@@ -9,3 +9,9 @@
 failed login ip=192.168.1.100
 failed login ip=192.168.1.100
 failed login ip=192.168.1.100
+2026-08-22T00:16:56.157984 Nmap scan detected source=127.0.0.1 multiple ports
+2026-08-22 19:00:01 FAILED LOGIN user=admin ip=127.0.0.2
+2026-08-22 19:00:02 FAILED LOGIN user=admin ip=127.0.0.2
+2026-08-22 19:00:03 FAILED LOGIN user=admin ip=127.0.0.2
+2026-08-22 19:00:04 FAILED LOGIN user=admin ip=127.0.0.2
+2026-08-22 19:00:05 FAILED LOGIN user=admin ip=127.0.0.2

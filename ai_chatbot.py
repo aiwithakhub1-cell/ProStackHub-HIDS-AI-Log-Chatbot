@@ -6,46 +6,44 @@ from groq import Groq
 from database import get_alerts
 
 
-load_dotenv()
-
-
-API_KEY = os.getenv("GROQ_API_KEY")
-MODEL = os.getenv(
-    "GROQ_MODEL",
-    "llama-3.3-70b-versatile"
-)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ENV_FILE = os.path.join(BASE_DIR, ".env")
 
 
 def ask_ai(question):
+    # Load the project's .env every time
+    load_dotenv(ENV_FILE, override=True)
 
-    if not API_KEY:
+    api_key = os.getenv("GROQ_API_KEY")
+    model = os.getenv(
+        "GROQ_MODEL",
+        "openai/gpt-oss-120b"
+    )
+
+    if not api_key:
         return (
-            "Groq API key is not configured. "
-            "Please add GROQ_API_KEY to your .env file."
+            "AI configuration error: "
+            "GROQ_API_KEY is missing from the project .env file."
         )
 
     alerts = get_alerts(50)
 
     if alerts:
-
         alert_text = "\n".join(
-            [
-                (
-                    f"Time: {alert['timestamp']} | "
-                    f"Event: {alert['event_type']} | "
-                    f"Severity: {alert['severity']} | "
-                    f"Source IP: {alert['source_ip']} | "
-                    f"Log: {alert['log_message']}"
-                )
-                for alert in alerts
-            ]
+            (
+                f"Time: {alert['timestamp']} | "
+                f"Event: {alert['event_type']} | "
+                f"Severity: {alert['severity']} | "
+                f"Source IP: {alert['source_ip']} | "
+                f"Log: {alert['log_message']}"
+            )
+            for alert in alerts
         )
-
     else:
         alert_text = "No security alerts have been detected yet."
 
     prompt = f"""
-You are a cybersecurity assistant.
+You are a defensive cybersecurity assistant.
 
 Analyze the following HIDS security events.
 
@@ -68,11 +66,10 @@ If the information is insufficient, clearly say so.
 """
 
     try:
-
-        client = Groq(api_key=API_KEY)
+        client = Groq(api_key=api_key)
 
         response = client.chat.completions.create(
-            model=MODEL,
+            model=model,
             messages=[
                 {
                     "role": "system",
@@ -87,11 +84,12 @@ If the information is insufficient, clearly say so.
                 }
             ],
             temperature=0.2,
-            max_tokens=1000
+            max_tokens=1000,
+            include_reasoning=False
         )
 
         return response.choices[0].message.content
 
     except Exception as error:
-
+        print(f"AI analysis error: {error}")
         return f"AI analysis error: {error}"

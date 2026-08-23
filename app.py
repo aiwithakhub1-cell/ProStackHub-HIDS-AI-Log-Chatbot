@@ -48,23 +48,26 @@ def api_alerts():
 
 @app.route("/chat", methods=["POST"])
 def chat():
+    try:
+        question = request.form.get("question", "").strip()
 
-    question = request.form.get(
-        "question",
-        ""
-    ).strip()
+        if not question:
+            return jsonify({
+                "answer": "Please enter a question."
+            }), 400
 
-    if not question:
+        answer = ask_ai(question)
 
         return jsonify({
-            "answer": "Please enter a question."
+            "answer": answer
         })
 
-    answer = ask_ai(question)
+    except Exception as error:
+        print(f"Chat error: {error}")
 
-    return jsonify({
-        "answer": answer
-    })
+        return jsonify({
+            "answer": f"Chat error: {error}"
+        }), 500
 
 
 if __name__ == "__main__":
@@ -73,7 +76,7 @@ if __name__ == "__main__":
 
         app.run(
             host="127.0.0.1",
-            port=5000,
+            port=5001,
             debug=False
         )
 
