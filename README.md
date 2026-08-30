@@ -113,3 +113,8 @@ Use only systems and networks that you own or are explicitly authorized to test.
 ## Project Status
 
 Core HIDS functionality includes real-time monitoring, rule-based detection, SQLite alert storage, Flask visualization, and AI-assisted security analysis.
+## Project Demonstration
+
+A demonstration video of the HIDS and AI Log Chatbot is included in this repository.
+
+[Watch HIDS Demonstration Video](hids.mp4)
